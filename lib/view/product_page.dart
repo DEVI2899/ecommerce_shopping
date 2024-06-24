@@ -123,7 +123,6 @@ class _ProductPageState extends State<ProductPage> {
                 height: height * 0.02,
               ),
               const Buttons(),
-
             ],
           ),
         ),
