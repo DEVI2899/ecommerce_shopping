@@ -1,17 +1,21 @@
-
-
-
+import 'package:easy_localization/easy_localization.dart';
+import 'package:ecommerce_task/main.dart';
 import 'package:ecommerce_task/view/cart_page.dart';
 import 'package:ecommerce_task/view/profile_page.dart';
-
+import 'package:ecommerce_task/widgets/custom_dropdown_widget.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:ecommerce_task/widgets/buttons.dart';
 import 'package:ecommerce_task/widgets/product_gird.dart';
 import 'package:ecommerce_task/widgets/search.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localization/flutter_localization.dart';
+import 'package:provider/provider.dart';
+
+import '../provider/locale_provider.dart';
+
 
 class ProductPage extends StatefulWidget {
-  const ProductPage({super.key});
+
+  const ProductPage({super.key,});
 
   @override
   State<ProductPage> createState() => _ProductPageState();
@@ -19,7 +23,10 @@ class ProductPage extends StatefulWidget {
 
 class _ProductPageState extends State<ProductPage> {
   TextEditingController searchController =TextEditingController();
-  final FlutterLocalization _localization = FlutterLocalization.instance;
+
+
+
+  //bottom selected index function
   int _selectedIndex =0;
   void onTapped(int index){
     setState(() {
@@ -28,18 +35,38 @@ class _ProductPageState extends State<ProductPage> {
   }
   bool trans = false;
 
-  late List languageCode = ["en", "ta"];
-  late List countryCode = ["US", "IN"];
+   Locale _locale = const Locale('ta');
+
+
+
+
+
+  void _changeLanguage(String languageCode) {
+    setState(() {
+      switch (languageCode) {
+        case 'en':
+          _locale = const Locale('en');
+          break;
+        case 'ta':
+          _locale = const Locale('ta');
+          break;
+        default:
+          _locale = const Locale('en');
+      }
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
+
     return  SafeArea(
       child: Scaffold(
       body: Container(
             color: Colors.white,
             child: _selectedIndex ==0 ?homeWidget(context)
                 : _selectedIndex == 2 ? const CartPage()
-                : const ProfilePage()
+                :  const ProfilePage()
 
         ),
       bottomNavigationBar: BottomNavigationBar(
@@ -80,9 +107,11 @@ class _ProductPageState extends State<ProductPage> {
     );
 
   }
+
   Widget homeWidget(BuildContext context){
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
+    final provider=Provider.of<LocaleProvider>(context);
     return Column (
       children :[
         Expanded(
@@ -96,20 +125,18 @@ class _ProductPageState extends State<ProductPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Column(
+                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Hi Dhiraj!' ,style: TextStyle(fontSize: 14,
+                      Text(AppLocalizations.of(context)!.name ,style: const TextStyle(fontSize: 14,
                           fontWeight: FontWeight.w700, fontFamily:'inter' ),),
-                      Text('Good Morning!' ,style: TextStyle(fontSize:20 ,
+                      Text(AppLocalizations.of(context)!.message,style: const TextStyle(fontSize:20 ,
                           fontWeight: FontWeight.bold, fontFamily:'inter' ),),
                     ],
                   ),
-                  OutlinedButton(onPressed: (){
-                    setState(() {
-                      trans ? _localization.translate('ta'): _localization.translate('en');
-                    });
-                  }, child: trans ? const Text('Tamil'): const Text('English')),
+                  CustomDropDownWidget(provider: provider),
+
+
                   CircleAvatar(
                     child: Image.network('https://img.freepik.com/free-vector/illustration-user-avatar-icon_53876-5907.jpg?w=740&t=st=1719153793~exp=1719154393~hmac=26d012b3d5b4b1927d92550810d0a4edd0b33c6336192f80d5cfdaab2fe5fede'),
                   )
@@ -132,6 +159,8 @@ class _ProductPageState extends State<ProductPage> {
       ],
     );
   }
+
+
 
 }
 
